@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulasi Ujian UPDA ITB S2 Teknik Komputer/Informatika - Latihan soal lengkap dengan timer dan skor otomatis">
+    <title>Simulasi UPDA ITB S2 - Teknik Komputer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ==================== LANDING PAGE ==================== -->
+    <section id="landing" class="screen active">
+        <div class="particles" id="particles"></div>
+        <nav class="navbar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#grad1)"/>
+                        <path d="M8 16L14 10L20 16L14 22Z" fill="white" opacity="0.9"/>
+                        <path d="M14 16L20 10L26 16L20 22Z" fill="white" opacity="0.6"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0" y1="0" x2="32" y2="32">
+                                <stop stop-color="#6366f1"/>
+                                <stop offset="1" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span>UPDA Simulator</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" onclick="showScreen('landing')">Beranda</a>
+                <a href="#" onclick="showScreen('landing')">Tentang</a>
+            </div>
+        </nav>
+
+        <div class="hero">
+            <div class="hero-badge">🎓 Persiapan S2 ITB</div>
+            <h1>Simulasi <span class="gradient-text">UPDA ITB</span><br>Program Magister</h1>
+            <p class="hero-subtitle">
+                Latihan ujian masuk S2 ITB program Teknik Komputer / Informatika.<br>
+                Bank soal 150+ mencakup Matematika, Fisika, Bahasa Inggris, Logika, dan Pemrograman.
+            </p>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalQuestions">150+</div>
+                    <div class="stat-label">Bank Soal</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Kategori</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Sesi Latihan</div>
+                </div>
+            </div>
+
+            <div class="config-panel">
+                <h3>⚙️ Konfigurasi Ujian</h3>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label for="questionCount">Jumlah Soal</label>
+                        <select id="questionCount">
+                            <option value="20">20 Soal (Quick)</option>
+                            <option value="40">40 Soal (Medium)</option>
+                            <option value="60" selected>60 Soal (Standard)</option>
+                            <option value="100">100 Soal (Full)</option>
+                            <option value="0">Semua Soal</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="timeLimit">Waktu</label>
+                        <select id="timeLimit">
+                            <option value="0">Tanpa Batas</option>
+                            <option value="30">30 Menit</option>
+                            <option value="60">60 Menit</option>
+                            <option value="90" selected>90 Menit</option>
+                            <option value="120">120 Menit</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="category">Kategori</label>
+                        <select id="category">
+                            <option value="all" selected>Semua Kategori</option>
+                            <option value="matematika">Matematika</option>
+                            <option value="fisika">Fisika</option>
+                            <option value="english">Bahasa Inggris</option>
+                            <option value="logika">Logika & Penalaran</option>
+                            <option value="programming">Pemrograman & Algoritma</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="shuffle">Acak Soal</label>
+                        <select id="shuffle">
+                            <option value="yes" selected>Ya</option>
+                            <option value="no">Tidak</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-primary btn-start" onclick="startExam()">
+                    <span>🚀</span> Mulai Ujian
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== EXAM PAGE ==================== -->
+    <section id="exam" class="screen">
+        <div class="exam-header">
+            <div class="exam-header-left">
+                <div class="exam-logo">UPDA ITB S2</div>
+                <div class="exam-category-badge" id="examCategoryBadge">Semua Kategori</div>
+            </div>
+            <div class="exam-header-center">
+                <div class="timer-display" id="timerDisplay">
+                    <svg class="timer-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span id="timerText">90:00</span>
+                </div>
+            </div>
+            <div class="exam-header-right">
+                <div class="progress-info">
+                    <span id="currentQ">1</span>/<span id="totalQ">60</span>
+                </div>
+                <button class="btn-outline btn-sm" onclick="toggleNavigator()">📋 Navigasi</button>
+                <button class="btn-danger btn-sm" onclick="confirmFinish()">Selesai</button>
+            </div>
+        </div>
+
+        <div class="exam-progress-bar">
+            <div class="exam-progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- Question Navigator Sidebar -->
+        <div class="navigator-overlay" id="navigatorOverlay" onclick="toggleNavigator()"></div>
+        <div class="navigator-panel" id="navigatorPanel">
+            <div class="navigator-header">
+                <h3>Navigasi Soal</h3>
+                <button class="btn-close" onclick="toggleNavigator()">✕</button>
+            </div>
+            <div class="navigator-stats">
+                <div class="nav-stat"><span class="dot dot-answered"></span> Dijawab: <strong id="answeredCount">0</strong></div>
+                <div class="nav-stat"><span class="dot dot-flagged"></span> Ditandai: <strong id="flaggedCount">0</strong></div>
+                <div class="nav-stat"><span class="dot dot-unanswered"></span> Belum: <strong id="unansweredCount">60</strong></div>
+            </div>
+            <div class="navigator-grid" id="navigatorGrid">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+        <!-- Question Area -->
+        <div class="question-container">
+            <div class="question-card">
+                <div class="question-meta">
+                    <span class="question-number" id="questionNumber">Soal 1</span>
+                    <span class="question-category" id="questionCategory">Matematika</span>
+                    <button class="btn-flag" id="flagBtn" onclick="toggleFlag()">
+                        <span id="flagIcon">🏳️</span> Tandai
+                    </button>
+                </div>
+                <div class="question-text" id="questionText">
+                    <!-- Question text here -->
+                </div>
+                <div class="options-list" id="optionsList">
+                    <!-- Options here -->
+                </div>
+            </div>
+
+            <div class="question-nav">
+                <button class="btn-secondary" id="prevBtn" onclick="prevQuestion()">
+                    ← Sebelumnya
+                </button>
+                <div class="question-dots" id="questionDots">
+                    <!-- Quick nav dots -->
+                </div>
+                <button class="btn-secondary" id="nextBtn" onclick="nextQuestion()">
+                    Selanjutnya →
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== RESULT PAGE ==================== -->
+    <section id="result" class="screen">
+        <div class="result-container">
+            <div class="result-header">
+                <div class="result-icon" id="resultIcon">🏆</div>
+                <h1 id="resultTitle">Hasil Ujian</h1>
+                <p class="result-subtitle" id="resultSubtitle">Simulasi UPDA ITB S2 - Teknik Komputer</p>
+            </div>
+
+            <div class="score-display">
+                <div class="score-circle" id="scoreCircle">
+                    <svg viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" class="score-bg"/>
+                        <circle cx="100" cy="100" r="90" class="score-fill" id="scoreFillCircle"/>
+                    </svg>
+                    <div class="score-text">
+                        <span class="score-value" id="scoreValue">0</span>
+                        <span class="score-label">SKOR</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-stats-grid">
+                <div class="result-stat correct">
+                    <div class="result-stat-icon">✅</div>
+                    <div class="result-stat-value" id="correctCount">0</div>
+                    <div class="result-stat-label">Benar</div>
+                </div>
+                <div class="result-stat wrong">
+                    <div class="result-stat-icon">❌</div>
+                    <div class="result-stat-value" id="wrongCount">0</div>
+                    <div class="result-stat-label">Salah</div>
+                </div>
+                <div class="result-stat skipped">
+                    <div class="result-stat-icon">⏭️</div>
+                    <div class="result-stat-value" id="skippedCount">0</div>
+                    <div class="result-stat-label">Dilewati</div>
+                </div>
+                <div class="result-stat time">
+                    <div class="result-stat-icon">⏱️</div>
+                    <div class="result-stat-value" id="timeTaken">00:00</div>
+                    <div class="result-stat-label">Waktu</div>
+                </div>
+            </div>
+
+            <div class="category-breakdown" id="categoryBreakdown">
+                <h3>📊 Performa per Kategori</h3>
+                <div class="category-bars" id="categoryBars">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+
+            <div class="result-actions">
+                <button class="btn-primary" onclick="reviewAnswers()">📝 Review Jawaban</button>
+                <button class="btn-secondary" onclick="showScreen('landing')">🏠 Kembali</button>
+                <button class="btn-secondary" onclick="startExam()">🔄 Ulangi Ujian</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== REVIEW PAGE ==================== -->
+    <section id="review" class="screen">
+        <div class="review-header">
+            <button class="btn-secondary" onclick="showScreen('result')">← Kembali ke Hasil</button>
+            <h2>📝 Review Jawaban</h2>
+            <div class="review-filter">
+                <button class="review-filter-btn active" onclick="filterReview('all', this)">Semua</button>
+                <button class="review-filter-btn" onclick="filterReview('wrong', this)">❌ Salah</button>
+                <button class="review-filter-btn" onclick="filterReview('correct', this)">✅ Benar</button>
+                <button class="review-filter-btn" onclick="filterReview('skipped', this)">⏭️ Dilewati</button>
+            </div>
+        </div>
+        <div class="review-list" id="reviewList">
+            <!-- Filled by JS -->
+        </div>
+    </section>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-card">
+            <div class="modal-icon">⚠️</div>
+            <h3>Selesaikan Ujian?</h3>
+            <p id="modalMsg">Anda masih memiliki soal yang belum dijawab. Yakin ingin menyelesaikan ujian?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal()">Kembali</button>
+                <button class="btn-danger" onclick="finishExam()">Ya, Selesaikan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
