@@ -63,7 +63,7 @@ function startExam() {
         pool = pool.filter(q => q.category === category);
     }
 
-    // Shuffle if requested
+    // Shuffle question order if requested
     if (doShuffle) {
         pool = shuffle(pool);
     }
@@ -77,6 +77,20 @@ function startExam() {
         alert('Tidak ada soal yang tersedia untuk kategori ini!');
         return;
     }
+
+    // Shuffle options for every question so that the correct answer is randomized across A, B, C, D
+    pool = pool.map(q => {
+        const indexedOptions = q.options.map((opt, idx) => ({
+            text: opt,
+            isCorrect: idx === q.answer
+        }));
+        const shuffledOptions = shuffle(indexedOptions);
+        return {
+            ...q,
+            options: shuffledOptions.map(item => item.text),
+            answer: shuffledOptions.findIndex(item => item.isCorrect)
+        };
+    });
 
     // Reset state
     examState = {
@@ -582,9 +596,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 prevQuestion();
-            } else if (e.key >= '1' && e.key <= '4') {
+            } else if (e.key >= '1' && e.key <= '5') {
                 e.preventDefault();
                 selectOption(parseInt(e.key) - 1);
+            } else if (['a', 'b', 'c', 'd', 'e'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+                const keyMap = { 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4 };
+                selectOption(keyMap[e.key.toLowerCase()]);
             } else if (e.key === 'f' || e.key === 'F') {
                 e.preventDefault();
                 toggleFlag();
